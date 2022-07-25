@@ -42,4 +42,66 @@ class BookReservationTest extends TestCase
         //When a book is added to the DB, the record count increases by 1
         $this->assertCount(1, Book::all());
     }
-}
+
+    /**
+     * @test
+     * 
+     */
+    public function a_book_title_is_required()
+    {
+       // $this->withoutExceptionHandling();
+        //If a book has a missing title
+        $response = $this->post('/books', [
+            'title' => '',
+            'author' => 'Bright Onapito', 
+        ]);
+        //Throw an error about the missing title 
+        $response->assertSessionHasErrors('title');
+
+    }
+
+    /**
+     * @test
+     * 
+     */
+    public function a_book_author_is_required()
+    {
+       // $this->withoutExceptionHandling();
+        //If a book has a missing author
+        $response = $this->post('/books', [
+            'title' => 'Some Title',
+            'author' => '', 
+        ]);
+        //Throw an error about the missing author 
+        $response->assertSessionHasErrors('author');
+
+    }
+
+     /**
+     * @test
+     * 
+     */
+    public function a_book_can_be_updated()
+    {
+          $this->withoutExceptionHandling();
+        //A book as a title and author
+        $this->post('/books', [
+            'title' => 'Some Title',
+            'author' => 'Bright Onapito', 
+        ]);
+
+        $book = Book::first(); //grab the id of the book
+
+        //if the title and or author is updated,
+        $response = $this->patch('/books/' . $book->id, [
+            'title' => 'New Title',
+            'author'=> 'New Author',
+        ]);
+
+        //Return updated fields
+        $this->assertEquals('New Title', Book::first()->title);
+        $this->assertEquals('New Author', Book::first()->author);
+
+        
+    }
+} 
