@@ -19,3 +19,5 @@ Route::get('/', function () {
 });
 
 Route::post('/books', [BooksController::class, 'store']);
+Route::patch('/books/{book}', [BooksController::class, 'update']); //route model binding 
+
