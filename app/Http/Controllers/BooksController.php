@@ -42,7 +42,7 @@ class BooksController extends Controller
     //Avoiding DRY for the validation in all functions
     protected function validatedRequest()
     {
-       return  request()->validate([
+       return request()->validate([
             'title' => 'required',
             'author' => 'required',    
         ]);
