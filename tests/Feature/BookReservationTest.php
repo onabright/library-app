@@ -30,17 +30,22 @@ class BookReservationTest extends TestCase
 
     public function a_book_can_be_added_to_the_library()
     {
-        $this->withoutExceptionHandling(); //Tells Laravel not to sanitize the displayed errors so we can see exactly what is going on.
+       // $this->withoutExceptionHandling(); //Tells Laravel not to sanitize the displayed errors so we can see exactly what is going on.
         //A book can be stored through POST
         $response = $this->post('/books', [
             'title' => 'Some Title',
             'author' => 'Bright Onapito'
         ]);
 
-        $response->assertOk(); //return an OK response of 200 
-
+        //$response->assertOk(); //return an OK response of 200 
+        
+        $book = Book::first(); //Grab id of the book
         //When a book is added to the DB, the record count increases by 1
         $this->assertCount(1, Book::all());
+
+        //$response->assertRedirect('/books/' . $book->id);
+        $response->assertRedirect($book->path());
+
     }
 
     /**
@@ -83,7 +88,7 @@ class BookReservationTest extends TestCase
      */
     public function a_book_can_be_updated()
     {
-          $this->withoutExceptionHandling();
+         // $this->withoutExceptionHandling();
         //A book as a title and author
         $this->post('/books', [
             'title' => 'Some Title',
@@ -94,6 +99,7 @@ class BookReservationTest extends TestCase
 
         //if the title and or author is updated,
         $response = $this->patch('/books/' . $book->id, [
+            //$response = $this->patch($book->path(), [
             'title' => 'New Title',
             'author'=> 'New Author',
         ]);
@@ -102,6 +108,36 @@ class BookReservationTest extends TestCase
         $this->assertEquals('New Title', Book::first()->title);
         $this->assertEquals('New Author', Book::first()->author);
 
-        
+        //$response->assertRedirect('/books/'. $book->id);
+        $response->assertRedirect($book->path());
+
+
     }
+
+    /**
+     * @test
+     */
+
+     public function a_book_can_be_deleted()
+     {
+         $this->withoutExceptionHandling();
+        //A book as a title and author
+        $this->post('/books', [
+            'title' => 'Some Title',
+            'author' => 'Bright Onapito', 
+        ]);
+
+        $book = Book::first(); //grab the id of the book
+        $this->assertCount(1, Book::all());
+
+
+        //if the book is deleted ,
+        $response = $this->delete('/books/' . $book->id);
+         
+         //check that there is no book in the db
+        $this->assertCount(0, Book::all());
+
+        //Redirect to base route
+        $response->assertRedirect('/books');
+     }
 } 
