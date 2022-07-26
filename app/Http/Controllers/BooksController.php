@@ -18,9 +18,13 @@ class BooksController extends Controller
 
         // Book::create($data);
         
-
+ 
         //this is better
-        Book::create($this->validatedRequest());
+        $book =  Book::create($this->validatedRequest());
+
+        //return redirect('/books/' . $book->id);
+        return redirect($book->path());
+
     }
 
     public function update(Book $book)
@@ -37,7 +41,20 @@ class BooksController extends Controller
         //This is better
         $book->update($this->validatedRequest());
 
+        //return redirect('/books/' . $book->id);
+        //This is a better way using a helper function defined inside the Book model
+        return redirect($book->path());
+ 
+
+
     }
+
+    public function destroy(Book $book)
+    {
+        $book->delete();
+
+        return redirect('/books');
+    } 
     
     //Avoiding DRY for the validation in all functions
     protected function validatedRequest()
@@ -47,4 +64,6 @@ class BooksController extends Controller
             'author' => 'required',    
         ]);
     }
+
+   
 } 
